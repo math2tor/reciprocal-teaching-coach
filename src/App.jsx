@@ -83,35 +83,49 @@ export default function App() {
     );
   }
 
-  function giveFeedback() {
+  async function giveFeedback() {
+  try {
+    const result = await fetch(
+      "/api/feedback",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          problem: problems[problemIndex],
+          response,
+        }),
+      }
+    );
+
+    const data = await result.json();
+
+    setFeedback(data.feedback);
+
     setScores((prev) => ({
       ...prev,
-      responses: (prev.responses || 0) + 1,
+      responses:
+        (prev.responses || 0) + 1,
     }));
+
     if (currentStudent.trim()) {
-  setStudentScores((prev) => ({
-    ...prev,
-    [currentStudent]:
-      (prev[currentStudent] || 0) + 1,
-  }));
+      setStudentScores((prev) => ({
+        ...prev,
+        [currentStudent]:
+          (prev[currentStudent] || 0) + 1,
+      }));
+    }
+  } catch (error) {
+    console.error(error);
+
+    setFeedback(
+      "AI feedback unavailable."
+    );
+  }
 }
 
-    if (response.length < 15) {
-      setFeedback(
-        "⚠️ Try explaining your thinking in more detail."
-      );
-    } else if (
-      response.toLowerCase().includes("because")
-    ) {
-      setFeedback(
-        "✅ Great reasoning! You explained why you chose your approach."
-      );
-    } else {
-      setFeedback(
-        "👍 Good start. Can you explain why your strategy works?"
-      );
-    }
-  }
 const buttonStyle = {
   backgroundColor: "#2563eb",
   color: "white",
