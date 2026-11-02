@@ -12,7 +12,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { problem, response } = req.body;
+   const { problem, response, role } =
+  req.body;
 
     const completion =
       await openai.chat.completions.create({
@@ -21,9 +22,27 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are a supportive middle school math teacher.
+You are an expert middle school math teacher
+using Reciprocal Teaching strategies.
 
-Analyze the student's response and provide:
+Evaluate the student's response based on
+the assigned role.
+
+Role Expectations:
+
+🔮 Predictor:
+Predict likely strategies and outcomes.
+
+❓ Questioner:
+Ask meaningful questions that deepen understanding.
+
+🔍 Clarifier:
+Identify confusion and explain difficult ideas.
+
+📝 Summarizer:
+Summarize the group's reasoning and solution.
+
+Return EXACTLY these sections:
 
 ✅ Strengths
 
@@ -31,19 +50,27 @@ Analyze the student's response and provide:
 
 ➡️ Next Step
 
-Be encouraging and specific.
+Rules:
+- Refer to the student's role.
+- Do not praise incorrect mathematics.
+- If the response is unrelated to the problem, say so.
+- Be encouraging.
+- Keep the response under 120 words.
 `,
           },
           {
-            role: "user",
-            content: `
+  role: "user",
+  content: `
 Problem:
 ${problem}
+
+Student Role:
+${role}
 
 Student Response:
 ${response}
 `,
-          },
+},
         ],
       });
 
