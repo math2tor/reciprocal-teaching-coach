@@ -93,10 +93,14 @@ export default function App() {
           "Content-Type":
             "application/json",
         },
-        body: JSON.stringify({
-          problem: problems[problemIndex],
-          response,
-        }),
+       body: JSON.stringify({
+  problem: problems[problemIndex],
+  response,
+  role:
+    assignments.find(
+      (a) => a.name === currentStudent
+    )?.role || "No Role Assigned",
+}),
       }
     );
 
@@ -125,7 +129,9 @@ export default function App() {
     );
   }
 }
-
+const headingStyle = {
+  color: "#1e293b",
+};
 const buttonStyle = {
   backgroundColor: "#2563eb",
   color: "white",
@@ -168,7 +174,9 @@ const buttonStyle = {
   Collaborative Math Discussions Made Easy
 </p>
 
-      <h2>Add Students</h2>
+      <h2 style={headingStyle}>
+  Add Students
+</h2>
 
       <input
         value={studentName}
@@ -215,7 +223,9 @@ const buttonStyle = {
       </button>
       <p>Student Count: {students.length}</p>
 
-      <h2>Math Problem</h2>
+      <h2 style={headingStyle}>
+  Math Problem
+</h2>
 
       <div
   style={{
@@ -229,7 +239,9 @@ const buttonStyle = {
         {problems[problemIndex]}
       </div>
 
-      <h2>Student Response</h2>
+      <h2 style={headingStyle}>
+  Student Response
+</h2>
 
       <input
         value={currentStudent}
@@ -262,7 +274,18 @@ const buttonStyle = {
         Get Feedback
       </button>
 
-      <p>{feedback}</p>
+      <div
+  style={{
+    backgroundColor: "white",
+    padding: "15px",
+    borderRadius: "12px",
+    marginTop: "15px",
+    whiteSpace: "pre-wrap",
+    color: "#1e293b",
+  }}
+>
+  {feedback}
+</div>
 
 
 
