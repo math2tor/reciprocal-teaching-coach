@@ -39,6 +39,32 @@ export default function App() {
     useState("");
   const [studentScores, setStudentScores] =
   useState({});
+  const [roomCode, setRoomCode] = useState("");
+const [joined, setJoined] = useState(false);
+const [studentRole, setStudentRole] =
+  useState("");
+  function generateRoomCode() {
+  const code = Math.random()
+    .toString(36)
+    .substring(2, 8)
+    .toUpperCase();
+
+  setRoomCode(code);
+}
+function joinRoom() {
+  if (!studentName.trim()) return;
+
+  setJoined(true);
+
+  const randomRole =
+    roles[
+      Math.floor(
+        Math.random() * roles.length
+      )
+    ];
+
+  setStudentRole(randomRole);
+}
   
 
   function addStudent() {
@@ -86,25 +112,22 @@ export default function App() {
   async function giveFeedback() {
   try {
     const result = await fetch(
-      "/api/feedback",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-       body: JSON.stringify({
-  problem: problems[problemIndex],
-  response,
-  role:
-    assignments.find(
-      (a) => a.name === currentStudent
-    )?.role || "No Role Assigned",
-}),
-      }
-    );
+  "/api/feedback",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      problem: problems[problemIndex],
+      response,
+      role: studentRole,
+    }),
+  }
+);
 
-    const data = await result.json();
+const data = await result.json();
+
 
     setFeedback(data.feedback);
 
@@ -132,6 +155,25 @@ export default function App() {
 const headingStyle = {
   color: "#1e293b",
 };
+function getRoleMission(role) {
+  switch (role) {
+    case "🔮 Predictor":
+      return "Predict a strategy the group should use.";
+
+    case "❓ Questioner":
+      return "Ask a question that deepens understanding.";
+
+    case "🔍 Clarifier":
+      return "Explain confusing parts of the problem.";
+
+    case "📝 Summarizer":
+      return "Summarize the group's thinking.";
+
+    default:
+      return "";
+  }
+}
+
 const buttonStyle = {
   backgroundColor: "#2563eb",
   color: "white",
@@ -142,7 +184,42 @@ const buttonStyle = {
   marginRight: "10px",
   marginTop: "10px",
 };
+function getRolePlaceholder(role) {
+  switch (role) {
+    case "🔮 Predictor":
+      return "Predict which strategy the group should use...";
 
+    case "❓ Questioner":
+      return "Ask a question that deepens understanding...";
+
+    case "🔍 Clarifier":
+      return "Explain the confusing part...";
+
+    case "📝 Summarizer":
+      return "Summarize the group's reasoning...";
+
+    default:
+      return "Enter your response...";
+  }
+}
+function getRoleTitle(role) {
+  switch (role) {
+    case "🔮 Predictor":
+      return "Prediction";
+
+    case "❓ Questioner":
+      return "Question";
+
+    case "🔍 Clarifier":
+      return "Clarification";
+
+    case "📝 Summarizer":
+      return "Summary";
+
+    default:
+      return "Student Response";
+  }
+}
   return (
     <div
   style={{
@@ -173,6 +250,57 @@ const buttonStyle = {
 >
   Collaborative Math Discussions Made Easy
 </p>
+<h2 style={headingStyle}>
+  Teacher Room
+</h2>
+
+<button
+  onClick={generateRoomCode}
+  style={buttonStyle}
+>
+  Create Room
+</button>
+
+<p>
+  Room Code: {roomCode || "Not Created"}
+</p>
+<h2 style={headingStyle}>
+  Join Room
+</h2>
+
+<input
+  value={studentName}
+  onChange={(e) =>
+    setStudentName(e.target.value)
+  }
+  placeholder="Student Name"
+/>
+
+<button
+  onClick={joinRoom}
+  style={buttonStyle}
+>
+  Join Room
+</button>
+{joined && (
+  <div
+    style={{
+      backgroundColor: "white",
+      padding: "15px",
+      borderRadius: "12px",
+      marginTop: "15px",
+    }}
+  >
+    <h3>
+      Your Role: {studentRole}
+    </h3>
+    <p>
+  {getRoleMission(studentRole)}
+</p>
+
+  </div>
+)}
+
 
       <h2 style={headingStyle}>
   Add Students
@@ -240,8 +368,9 @@ const buttonStyle = {
       </div>
 
       <h2 style={headingStyle}>
-  Student Response
+  {getRoleTitle(studentRole)}
 </h2>
+
 
       <input
         value={currentStudent}
@@ -261,8 +390,7 @@ const buttonStyle = {
         onChange={(e) =>
           setResponse(e.target.value)
         }
-        placeholder="Explain your thinking..."
-      />
+        placeholder={getRolePlaceholder(studentRole)}      />
 
       <br />
       <br />

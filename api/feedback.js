@@ -79,11 +79,11 @@ ${response}
         completion.choices[0].message.content,
     });
   } catch (error) {
-    console.error(error);
+  console.error(error);
 
-    res.status(500).json({
-      feedback:
-        "AI feedback is currently unavailable.",
-    });
-  }
+  res.status(500).json({
+    feedback:
+      "ERROR: " + error.message,
+  });
+}
 }
