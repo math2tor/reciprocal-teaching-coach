@@ -43,16 +43,37 @@ export default function App() {
 const [joined, setJoined] = useState(false);
 const [studentRole, setStudentRole] =
   useState("");
+  const [userType, setUserType] =
+  useState("teacher");
+  const [enteredCode, setEnteredCode] =
+  useState("");
+  const [discussionStarted, setDiscussionStarted] =
+  useState(false);
+
+const [joinError, setJoinError] =
+  useState("");
+
   function generateRoomCode() {
   const code = Math.random()
     .toString(36)
     .substring(2, 8)
     .toUpperCase();
 
-  setRoomCode(code);
+  setRoomCode(code);ƒ
 }
 function joinRoom() {
   if (!studentName.trim()) return;
+
+  if (
+    enteredCode.trim() !== roomCode
+  ) {
+    setJoinError(
+      "Invalid room code."
+    );
+    return;
+  }
+
+  setJoinError("");
 
   setJoined(true);
 
@@ -249,10 +270,34 @@ function getRoleTitle(role) {
   }}
 >
   Collaborative Math Discussions Made Easy
-</p>
-<h2 style={headingStyle}>
-  Teacher Room
+  <h2 style={headingStyle}>
+  Select Mode
 </h2>
+
+<button
+  onClick={() =>
+    setUserType("teacher")
+  }
+  style={buttonStyle}
+>
+  Teacher
+</button>
+
+<button
+  onClick={() =>
+    setUserType("student")
+  }
+  style={buttonStyle}
+>
+  Student
+</button>
+
+</p>
+{userType === "teacher" && (
+<>
+  <h2 style={headingStyle}>
+    Teacher Room
+  </h2>
 
 <button
   onClick={generateRoomCode}
@@ -264,10 +309,38 @@ function getRoleTitle(role) {
 <p>
   Room Code: {roomCode || "Not Created"}
 </p>
+<button
+  onClick={() =>
+    setDiscussionStarted(true)
+  }
+  style={buttonStyle}
+
+ >
+  Start Discussion
+</button>
+</>
+)}
+{userType === "student" && (
+<>
+
 <h2 style={headingStyle}>
   Join Room
 </h2>
 
+
+
+<br />
+<br />
+<input
+  value={enteredCode}
+  onChange={(e) =>
+    setEnteredCode(e.target.value)
+  }
+  placeholder="Room Code"
+/>
+
+<br />
+<br />
 <input
   value={studentName}
   onChange={(e) =>
@@ -282,6 +355,14 @@ function getRoleTitle(role) {
 >
   Join Room
 </button>
+<p
+  style={{
+    color: "red",
+  }}
+>
+  {joinError}
+</p>
+
 {joined && (
   <div
     style={{
@@ -297,11 +378,38 @@ function getRoleTitle(role) {
     <p>
   {getRoleMission(studentRole)}
 </p>
+<div
+  style={{
+    backgroundColor: "#eff6ff",
+    padding: "12px",
+    borderRadius: "8px",
+    marginTop: "10px",
+  }}
+>
+  {discussionStarted ? (
+  <div>
+    <strong>
+      Discussion Problem:
+    </strong>
 
+    <p>
+      {problems[problemIndex]}
+    </p>
   </div>
+) : (
+  <p>
+    Waiting for teacher to start discussion...
+  </p>
 )}
+</div>
 
 
+</div>
+)}
+</>
+)}
+{userType === "teacher" && (
+<>
       <h2 style={headingStyle}>
   Add Students
 </h2>
@@ -502,6 +610,8 @@ function getRoleTitle(role) {
     ))}
 </ul>
       </div>
+      </>
+)}
     </div>
   );
 }
