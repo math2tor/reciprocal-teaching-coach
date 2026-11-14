@@ -270,6 +270,7 @@ function getRoleTitle(role) {
   }}
 >
   Collaborative Math Discussions Made Easy
+  </p>
   <h2 style={headingStyle}>
   Select Mode
 </h2>
@@ -292,7 +293,7 @@ function getRoleTitle(role) {
   Student
 </button>
 
-</p>
+
 {userType === "teacher" && (
 <>
   <h2 style={headingStyle}>
